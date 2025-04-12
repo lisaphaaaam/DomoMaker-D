@@ -7,13 +7,14 @@ const makerPage = (req, res) => {
 };
 
 const makeDomo = async (req, res) => {
-  if (!req.body.name || !req.body.age) {
-    return res.status(400).json({ error: 'Both name and age are required!' });
+  if (!req.body.name || !req.body.age || !req.body.level) {
+    return res.status(400).json({ error: 'Name, age, and level are required!' });
   }
 
   const domoData = {
     name: req.body.name,
     age: req.body.age,
+    level: req.body.level,
     owner: req.session.account._id,
   };
 
@@ -30,20 +31,33 @@ const makeDomo = async (req, res) => {
   }
 };
 
-const getDomos = async (req, res) => {
-  try{
-    const query = {owner: req.session.account._id};
-    const docs = await Domo.find(query).select('name age').lean().exec();
-
-    return res.json({domos: docs});
-  }catch (err){
+const deleteDomo = async (req, res) => {
+  try {
+    const id = req.body.id;
+    await Domo.deleteOne({ _id: id, owner: req.session.account._id });
+    return res.status(200).json({ message: 'Deleted!' });
+  } catch (err) {
     console.log(err);
-    return res.status(500).json({error: 'Error retrieving domos!'});
+    return res.status(500).json({ error: 'Failed to delete domo' });
+  }
+};
+
+
+const getDomos = async (req, res) => {
+  try {
+    const query = { owner: req.session.account._id };
+    const docs = await Domo.find(query).select('name age level').lean().exec();
+
+    return res.json({ domos: docs });
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({ error: 'Error retrieving domos!' });
   }
 };
 
 module.exports = {
   makerPage,
   makeDomo,
+  deleteDomo,
   getDomos,
 };
