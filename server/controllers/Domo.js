@@ -1,3 +1,5 @@
+// TODO: change domo information, make sure it takes from the models domo information
+
 const models = require('../models');
 
 const { Domo } = models;
@@ -7,21 +9,25 @@ const makerPage = (req, res) => {
 };
 
 const makeDomo = async (req, res) => {
-  if (!req.body.name || !req.body.age || !req.body.level) {
-    return res.status(400).json({ error: 'Name, age, and level are required!' });
+  if (!req.body.title || !req.body.company || !req.body.pay) {
+    return res.status(400).json({ error: 'title, company, and pay are required!' });
   }
 
   const domoData = {
-    name: req.body.name,
-    age: req.body.age,
-    level: req.body.level,
+    title: req.body.title,
+    company: req.body.company,
+    pay: req.body.pay,
+    type: req.body.type,
+    applied: req.body.applied,
+    status: req.body.status,
     owner: req.session.account._id,
   };
+
 
   try {
     const newDomo = new Domo(domoData);
     await newDomo.save();
-    return res.status(201).json({ name: newDomo.name, age: newDomo.age });
+    return res.status(201).json({ title: newDomo.title, company: newDomo.company, pay: newDomo.pay });
   } catch (err) {
     console.log(err);
     if (err.code === 11000) {
@@ -42,11 +48,10 @@ const deleteDomo = async (req, res) => {
   }
 };
 
-
 const getDomos = async (req, res) => {
   try {
     const query = { owner: req.session.account._id };
-    const docs = await Domo.find(query).select('name age level').lean().exec();
+    const docs = await Domo.find(query).select('title company pay type applied status').lean().exec();
 
     return res.json({ domos: docs });
   } catch (err) {

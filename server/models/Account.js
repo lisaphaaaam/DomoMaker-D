@@ -1,3 +1,5 @@
+// TODO: change domo information
+
 /* This file defines our schema and model interface for the account data.
 
    We first import bcrypt and mongoose into the file. bcrypt is an industry

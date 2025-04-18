@@ -1,3 +1,5 @@
+// TODO: change domo information
+
 const models = require('../models');
 
 const { Account } = models;
